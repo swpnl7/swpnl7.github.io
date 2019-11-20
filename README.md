@@ -1,2 +1,2 @@
-# swpnl7.github.io He is a good dog
+# swapnil is a good dog
 He is a good boy
