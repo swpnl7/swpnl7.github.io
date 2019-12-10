@@ -17,3 +17,7 @@
 	
 	We'll use the following cURL command and options to get each step of our redirects.
 	curl -s -L -D - http://test.chrislatta.org/myredirect.html -o /dev/null -w '%{url_effective}'
+
+
+	To Check if an server is listening at port x
+	nc -vz 13.52.160.194 x
