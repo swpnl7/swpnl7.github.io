@@ -21,3 +21,7 @@
 
 	To Check if an server is listening at port x
 	nc -vz 13.52.160.194 x
+
+
+
+--------------curl command curl -IvkL amol-biotech.com------entire flow of redirection----
