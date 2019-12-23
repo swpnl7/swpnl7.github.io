@@ -27,3 +27,4 @@
 --------------curl command curl -IvkL amol-biotech.com------entire flow of redirection----
 		dig  edns-client-sub.net TXT to check if EDNS is enabled or not
 		
+sudo tcpdump -i en0 -n "port 8080" to get live packet capture
