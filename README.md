@@ -28,3 +28,6 @@
 		dig  edns-client-sub.net TXT to check if EDNS is enabled or not
 		
 sudo tcpdump -i en0 -n "port 8080" to get live packet capture
+				
+				
+				curl -L --output /dev/null --silent --show-error --write-out 'lookup:        %{time_namelookup}\nconnect:       %{time_connect}\nappconnect:    %{time_appconnect}\npretransfer:   %{time_pretransfer}\nredirect:      %{time_redirect}\nstarttransfer: %{time_starttransfer}\ntotal:         %{time_total}\n' 'turisol.net'
