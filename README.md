@@ -84,3 +84,7 @@ Address: 192.30.252.153
 	ttl = 60
     ADDITIONAL RECORDS:
 ------------
+
+
+
+sudo tcpdump -ni any port 53 -w <FILENAME>.pcap to take packet capture
