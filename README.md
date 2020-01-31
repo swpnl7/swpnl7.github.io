@@ -30,8 +30,7 @@
 sudo tcpdump -i en0 -n "port 8080" to get live packet capture
 
 ----------------------------------------------------------------------------------------------------
--->  curl -L --output /dev/null --silent --show-error --write-out 'lookup:        %{time_namelookup}\nconnect:       %{time_connect}\nappconnect:    %{time_appconnect}\npretransfer:   %{time_pretransfer}\nredirect:      %{time_redirect}\nstarttransfer: %{time_starttransfer}\ntotal:         %{time_total}\n' 'whiteshadow.me'
-
+-->  curl -Ivk -w "\n\nTime Taken For Name Look-up: %{time_namelookup} \nTime Taken Establishing TCP Connection : %{time_connect} \nTime Taken For Appconnect: %{time_appconnect} \nTime Taken For Pre-Transfer:  %{time_pretransfer} \nTime Taken For First Byte Transfer : %{time_starttransfer} \nTime Taken For Redirect:  %{time_redirect}  \nTotal Time: %{time_total} \n +++++++++END++++++++++ \n" -o /dev/null https://URL;
 Output:-
 ---------
 lookup:        0.004181
