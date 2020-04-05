@@ -87,3 +87,87 @@ Address: 192.30.252.153
 
 
 sudo tcpdump -ni any port 53 -w <FILENAME>.pcap to take packet capture
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+NGINX - Managing SSL Certificates Using OpenSSL
+Introduction
+
+sudo su -
+
+Create a Certificate Authority Private Key and Certificate
+
+Create a directory to store our certificates:
+
+mkdir -p /etc/nginx/certificates
+
+Now let's get into it:
+
+cd /etc/nginx/certificates
+
+Generate a private key for the CA:
+
+openssl genrsa 2048 > ca-key.pem
+
+Generate the X509 certificate for the CA. For this step, just hit Enter at all of the prompts and use the default answers:
+
+openssl req -new -x509 -nodes -days 365000 \
+      -key ca-key.pem -out ca-cert.pem
+
+Now if we run ls -la, we'll see those two new files listed.
+Create a Private Key for the NGINX Server
+
+Generate a private key and create a certificate request for the NGINX server:
+
+openssl req -newkey rsa:2048 -days 365000 \
+      -nodes -keyout server-key.pem -out server-req.pem
+
+Accepting the default answers to these questions is fine, except for the Common Name. Fill something in, like TEST USER.
+
+Process the key to remove the passphrase:
+
+openssl rsa -in server-key.pem -out server-key.pem
+
+We should see the following: writing RSA key
+Create a Self-Signed Certificate for the NGINX Server
+
+Generate a self-signed X509 certificate for the NGINX server:
+
+openssl x509 -req -in server-req.pem -days 365000 \
+      -CA ca-cert.pem -CAkey ca-key.pem -set_serial 01 \
+      -out server-cert.pem
+
+We now have self-signed X509 certificates for the NGINX server in the /etc/nginx/certificates directory. Run another ls -la to be sure.
+
+We need to allow the nginx user access to the certificates. Add read permission for group and other:
+
+chmod 644 *
+
+Verify the Self-Signed Certificate for the NGINX Server
+
+Let's use the openssl verify command to verify that the X509 certificate was correctly generated:
+
+openssl verify -CAfile ca-cert.pem server-cert.pem
+
+We should see the following: server-cert.pem: OK
