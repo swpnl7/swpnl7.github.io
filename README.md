@@ -171,3 +171,114 @@ Let's use the openssl verify command to verify that the X509 certificate was cor
 openssl verify -CAfile ca-cert.pem server-cert.pem
 
 We should see the following: server-cert.pem: OK
+
+
+
+<h2>Working with OpenSSL and Httpd</h2>
+
+
+The virtual host should be accessible at shop.example.com:443 on the host webnode. The virtual host should operate over SSL using a 2048-bit self-signed private key. The key should be encrypted using AES128 and stored in /etc/pki/tls/private/httpdkey.pem on the webserver host using the passphrase httpd. The self-signed certificate should be stored in the file /etc/pki/tls/certs/httpdcert.pem on the webserver host.
+
+You will need to allow HTTPS traffic through the OS-level firewall on port 443. This may be completed by running the following commands on the web server host:
+
+sudo firewall-cmd --add-service=https --permanent
+sudo firewall-cmd --reload
+
+Once the virtual host and firewall access have been configured, verify that your configuration works by using the openssl s_client command. Output the secure connection information to /home/cloud_user/httpd_output on the host workstation.
+
+
+
+
+
+
+
+
+Install mod_ssl on the Host webserver
+
+    Log in to the webserver host.
+
+    ssh webserver
+
+    Escalate privileges to root.
+
+    sudo su -
+
+    Install mod_ssl.
+
+    yum install -y mod_ssl
+
+Generate and Sign a Private Key
+
+    Change to the /tls/ directory.
+
+    cd /etc/pki/tls/
+
+    Create a new encrypted private key.
+
+    openssl genrsa -aes128 -out private/httpdkey.pem
+
+    Enter httpd at the next two passphrase prompts.
+    Generate a self-signed certificate using the encrypted private key.
+
+    openssl req -new -x509 -key private/httpdkey.pem -out certs/httpdcert.pem -days 365
+
+    Enter httpd at the passphrase prompt.
+    At the next prompt, enter the following information:
+        Country Name: US
+        State or Province Name: Texas
+        Locality Name: Dallas
+        Organization Name: Example Corp
+        Common Name: shop.example.com
+        Email Address: webmaster@example.com
+
+Configure the Default Apache Virtual Host
+
+    Edit /etc/httpd/conf.d/ssl.conf.
+
+    vim /etc/httpd/conf.d/ssl.conf
+
+    Type /Virtual to search for the SSH Virtual Host Context section.
+    At the end of the <VirtualHost _default_:443> section, add the following on a new line:
+
+    ServerName shop.example.com:443
+
+    Type /SSLCert to search for the Server Certificate section.
+    Locate the line SSLCertificateFile /etc/pki/tls/certs/localhost.crt, and change it to the following:
+
+    SSLCertificateFile /etc/pki/tls/certs/httpdcert.pem
+
+    Locate the line SSLCertificateKeyFile /etc/pki/tls/private/localhost.key, and change it to the following:
+
+    SSLCertificateKeyFile /etc/pki/tls/private/httpdkey.pem
+
+    Press Esc, then type :wq to exit the vim text editor.
+    Restart the Apache httpd server.
+
+    systemctl restart httpd
+
+    Enter httpd at the passphrase prompt.
+    Open port 443 on the OS firewall.
+
+    firewall-cmd --add-service=https --permanent
+
+    Reload the firewall.
+
+    firewall-cmd --reload
+
+Verify the Configuration
+
+    Press Ctrl + D twice to log out of webserver and return to workstation.
+    Verify that the configuration is working properly.
+
+    openssl s_client -connect shop.example.com:443
+
+    Press Ctrl + C to return to the command prompt.
+    Write the s_client output to a file.
+
+    openssl s_client -connect shop.example.com:443 > /home/cloud_user/httpd_output
+
+    List the contents of the file to verify that the certificate information is there.
+
+    cat /home/cloud_user/httpd_output
+
+
